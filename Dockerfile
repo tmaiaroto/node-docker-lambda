@@ -16,7 +16,7 @@ ADD . .
 #   rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp
 
 EXPOSE 3000
-ENTRYPOINT ["node", "container.js"]
+ENTRYPOINT ["node", "_container.js"]
 # {} is the default parameter passed, but it can be overwritten.
 # docker run <container-name> param
 # 
