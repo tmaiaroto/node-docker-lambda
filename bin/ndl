@@ -1,0 +1,124 @@
+#!/usr/bin/env node
+
+var program = require('commander')
+  , path = require('path')
+  , fs = require('fs')
+  , exec = require('child_process').exec
+  , commandExists = require('command-exists');
+
+var packageJson = require(path.resolve(__dirname, '..', 'package.json'));
+
+// The two files we need for everything.
+var containerFile = path.resolve(__dirname, '..', '_container.js');
+var dockerFile = path.resolve(__dirname, '..', 'Dockerfile');
+var copiedContainerFile = path.resolve(process.cwd(), '_container.js');
+var copiedDockerFile = path.resolve(process.cwd(), 'Dockerfile');
+
+// Copies the files required to build the Docker image over to the current working directory.
+var copyFilesToCwd = function(verbose, cb) {
+  cb = (cb === undefined) ? function(){}:cb;
+
+  if(!fs.existsSync(copiedContainerFile)) {
+    fs.writeFileSync(copiedContainerFile, fs.readFileSync(containerFile));
+    if(verbose) {
+      console.log("Copied `_container.js`");
+    }
+  } else {
+    if(verbose) {
+      console.log("`_container.js` already exists, skipping.");
+    }
+  }
+
+  if(!fs.existsSync(copiedDockerFile)) {
+    fs.writeFileSync(copiedDockerFile, fs.readFileSync(dockerFile));
+    if(verbose) {
+      console.log("Copied `Dockerfile`");
+    }
+  } else {
+    if(verbose) {
+      console.log("`Dockerfile` already exists, skipping.");
+    }
+  }
+
+  return cb();
+};
+
+// Removes or cleans up the working files used to build the Docker image. This runs if the files are no longer needed/wanted 
+// by the user (depends on the command executed).
+var deleteFilesFromCwd = function() {
+  if(fs.existsSync(copiedDockerFile)) {
+    fs.unlinkSync(copiedDockerFile);
+  }
+
+  if(fs.existsSync(copiedContainerFile)) {
+    fs.unlinkSync(copiedContainerFile);
+  }
+};
+
+// Builds the Docker image (requires the `docker` command).
+var buildDockerImage = function(verbose, options, cb) {
+  cb = (cb === undefined) ? function(){}:cb;
+  return exec("docker build -t " + options.name + " " + process.cwd(), cb);
+};
+
+// TODO: This
+// program
+//   .version(lambda.version)
+//   .command('deploy')
+//   .description('Deploy your Dockerized AWS Lambda code to ECS.')
+//   // I think many of these can be added by the user to their Dockerfile which is generated for them.
+//   // 
+//   // 
+//   //.option('-a, --accessKey [' + AWS_ACCESS_KEY_ID + ']', 'AWS Access Key', AWS_ACCESS_KEY_ID)
+//   //.option('-s, --secretKey [' + AWS_SECRET_ACCESS_KEY + ']', 'AWS Secret Key', AWS_SECRET_ACCESS_KEY)
+//   //.option('-p, --profile [' + AWS_PROFILE + ']', 'AWS Credentials Profile', AWS_PROFILE)
+//   //.option('-k, --sessionToken [' + AWS_SESSION_TOKEN + ']', 'AWS Session Token', AWS_SESSION_TOKEN)
+//   //.option('-r, --region [' + AWS_REGION + ']', 'AWS Region', AWS_REGION)
+//   //.option('-n, --functionName [' + AWS_FUNCTION_NAME + ']', 'Lambda FunctionName', AWS_FUNCTION_NAME)
+//   //.option('-h, --handler [' + AWS_HANDLER + ']', 'Lambda Handler {index.handler}', AWS_HANDLER)
+//   //.option('-o, --role [' + AWS_ROLE + ']', 'Amazon Role ARN', AWS_ROLE)
+//   //.option('-m, --memorySize [' + AWS_MEMORY_SIZE + ']', 'Lambda Memory Size', AWS_MEMORY_SIZE)
+//   //.option('-v, --version [' + AWS_FUNCTION_VERSION + ']', 'Lambda Function Version', AWS_FUNCTION_VERSION)
+//   .action(function (prg) {
+//     lambda.deploy(prg);
+//   });
+
+// Assuming Docker is installed, this command builds the default container to run a Lambda.
+// This assumes there is an `index.js` file with an `exports.handler()` function to call.
+program
+  .version(packageJson.version)
+  .command('build <imageName>')
+  .description('Dockerize your AWS Lambda code without any customizations to the container.')
+  .action(function(imageName) {
+    commandExists('docker', function(err, commandExists) {
+      if(commandExists) {
+          // proceed confidently knowing this command is available
+          copyFilesToCwd(false, function() {
+            buildDockerImage(true, {name: imageName}, function(err, stdout, stderr) {
+              deleteFilesFromCwd();
+              if(!err) {
+                console.log("You should now see your image (" + imageName + ") by running `docker images`");
+              } else {
+                console.log(stdout);
+              }
+            });
+          });
+      } else {
+        console.log("You'll need to have Docker installed. It's very easy to do, go visit https://www.docker.com");
+      }
+    });
+  });
+
+// This command will simply copy the files needed to build a Docker container over to the current working directory.
+// So one can run it in the directory with their Lambda code and then manually build the Docker container from there.
+// The reason someone may want to run this is so that they can alter the `Dockerfile` and even the `_container.js` if needed.
+// This could allow a user to add additional things to the container, add environment variables, etc.
+program
+  .version(packageJson.version)
+  .command('copy')
+  .description('Copy the Dockerfile and _container.js, to handle your Lambda, to the current directory. Then, edit as needed and build the Docker image manually.')
+  .action(function() {
+    copyFilesToCwd(true);
+  });
+
+program.parse(process.argv);
