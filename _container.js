@@ -4,7 +4,7 @@ var context = {
 	// Not present in Lambda, we will make available the package.json to our context.
 	package: pjson,
 	// Not exactly the same thing, but close.
-	functionName: psjon.name,
+	functionName: pjson.name,
 
 	done: function(msg) { if(msg){ console.log(msg); process.exit(); } },
 	fail: function(msg) { if(msg){ console.log(msg); } },
