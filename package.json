@@ -6,7 +6,7 @@
   "author": "Tom Maiaroto",
   "email": "tom@shift8creative.com",
   "url": "https://github.com/tmaiaroto/node-docker-lambda",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {},
   "dependencies": {
     "command-exists": "^0.1.0",
