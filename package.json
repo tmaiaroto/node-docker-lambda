@@ -4,6 +4,8 @@
   "description": "A Docker container that mimics AWS Lambda, allowing you to run your Lmabda code within Docker (and ECS).",
   "main": "_container.js",
   "author": "Tom Maiaroto",
+  "email": "tom@shift8creative.com",
+  "url": "https://github.com/tmaiaroto/node-docker-lambda",
   "license": "ISC",
   "devDependencies": {},
   "dependencies": {
