@@ -6,6 +6,10 @@
   "author": "Tom Maiaroto",
   "email": "tom@shift8creative.com",
   "url": "https://github.com/tmaiaroto/node-docker-lambda",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tmaiaroto/node-docker-lambda.git"
+  },
   "license": "MIT",
   "devDependencies": {},
   "dependencies": {
