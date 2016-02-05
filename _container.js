@@ -5,10 +5,13 @@ var context = {
 	package: pjson,
 	// Not exactly the same thing, but close.
 	functionName: pjson.name,
+	functionVersion: pjson.version,
+	memoryLimitInMB: 0,
+	invokedFunctionArn: "",
 
-	done: function(msg) { if(msg){ console.log(msg); process.exit(); } },
-	fail: function(msg) { if(msg){ console.log(msg); } },
-	succeed: function(msg) { if(msg){ console.log(msg); } },
+	done: function(err, msg) { if(err){ console.log(msg); } process.exit(); },
+	fail: function(err) { if(err){ console.log(err); } process.exit(); },
+	succeed: function(msg) { if(msg){ console.log(msg); } process.exit(); },
 	// Docker containers don't have a max execution time like Lambda, but we'll still provide this function for compatibility.
 	getRemainingTimeInMillis: function() { return 0; }
 };
