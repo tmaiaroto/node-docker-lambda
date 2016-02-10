@@ -1,7 +1,10 @@
 # node-docker-lambda
 
-This is designed as a command line tool to help you wrap your existing AWS Lambda functions within a Docker container to run. You can also
-simply look at the `Dockerfile` and `_container.js` file here for examples in building your own Docker container.
+Ever want to run your AWS Lambda functions somewhere other than AWS Lambda? Did you create some awesome Lambda only to find out it takes
+longer than 5 minutes to run? Not a problem! You can easily run your AWS Lambda function anywhere you can run Docker.
+
+This is designed as a command line tool to help you wrap your existing (Node.js) AWS Lambda functions within a Docker container to run. 
+You can also simply look at the `Dockerfile` and `_container.js` file here for examples in building your own Docker container.
 
 It's useful if you want to sometimes run code in AWS Lambda while other times in a Docker container on your own servers or perhaps through ECS. 
 
