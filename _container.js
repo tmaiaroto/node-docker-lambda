@@ -49,3 +49,9 @@ if(process.argv[2] !== undefined) {
 	console.log("No event message passed.");
 	process.exit();
 }
+
+// Just in case your Lambda doesn't catch some error. This ensures the container exits, freeing things up.
+process.on('uncaughtException', function (err) {
+  console.log(err, err.stack);
+  process.exit(1);
+});
