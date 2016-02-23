@@ -1,6 +1,6 @@
 {
   "name": "node-docker-lambda",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A Docker container that mimics AWS Lambda, allowing you to run your Lmabda code within Docker (and ECS).",
   "main": "_container.js",
   "author": "Tom Maiaroto",
